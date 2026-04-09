@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: REPLACE_ME_REPO_URL
+    repoURL: git@github.com:carlosbioingeniero/Test_argo.git
     targetRevision: HEAD
     path: tests/argo-helm-config-analysis/charts/config-injection-demo
     helm:
