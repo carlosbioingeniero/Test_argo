@@ -1,0 +1,5 @@
+apiVersion: v2
+name: config-injection-demo
+description: Demo chart for comparing config injection as mounted files vs env vars (Helm + ArgoCD scenarios)
+version: 0.1.0
+type: application

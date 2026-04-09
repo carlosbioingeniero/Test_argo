@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: busybox
+  tag: "1.36.1"
+  pullPolicy: IfNotPresent
+
+mode: files # files | env
+
+app:
+  name: config-injection-demo
+
+config:
+  text: "hello-from-config"
+  multiline: |-
+    line1
+    line2

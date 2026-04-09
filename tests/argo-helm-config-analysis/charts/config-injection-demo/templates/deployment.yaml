@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "config-injection-demo.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "config-injection-demo.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "config-injection-demo.fullname" . }}
+    spec:
+      containers:
+        - name: busybox
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "MODE={{ .Values.mode }}"
+              echo "---ENV---"
+              echo "TEXT_ENV=$TEXT_ENV"
+              echo "MULTILINE_ENV=${MULTILINE_ENV:-}"
+              echo "---FILES---"
+              if [ -f /etc/config/text ]; then echo "TEXT_FILE=$(cat /etc/config/text)"; fi
+              if [ -f /etc/config/multiline ]; then echo "MULTILINE_FILE=$(cat /etc/config/multiline)"; fi
+              echo "---DONE---"
+              sleep 3600
+          env:
+            - name: TEXT_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "config-injection-demo.fullname" . }}-config
+                  key: text
+            - name: MULTILINE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "config-injection-demo.fullname" . }}-config
+                  key: multiline
+          {{- if eq .Values.mode "files" }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+          {{- end }}
+      {{- if eq .Values.mode "files" }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "config-injection-demo.fullname" . }}-config
+            items:
+              - key: text
+                path: text
+              - key: multiline
+                path: multiline
+      {{- end }}
