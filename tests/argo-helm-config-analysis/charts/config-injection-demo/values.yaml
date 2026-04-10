@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: busybox
-  tag: "1.36.1"
+  repository: quay.io/libpod/busybox
+  tag: "latest"
   pullPolicy: IfNotPresent
 
 mode: files # files | env
